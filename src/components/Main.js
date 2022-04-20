@@ -7,13 +7,25 @@ import { FaPencilAlt, FaWindowClose } from 'react-icons/fa';
 export default class Main extends Component {
   state = {
     newTask: '',
-    tasks: [
-      'drink coffee',
-      'eat something',
-      'exercise myself',
-      'study'
-    ]
+    tasks: []
   };
+
+  handleSubmit = (event) => {
+    event.preventDefault();
+
+    const { tasks } = this.state;
+    let { newTask } = this.state;
+    newTask = newTask.trim();
+
+    if (tasks.indexOf(newTask) !== -1) {
+      return;
+    }
+
+    const newTasks = [...tasks];
+    this.setState({
+      tasks: [...newTasks,newTask],
+    });
+  }
 
   handleChanges = (event) => {
     this.setState({
@@ -28,10 +40,10 @@ export default class Main extends Component {
       <div className="main">
         <h1>Task list</h1>
 
-        <form action="#" className="form">
+        <form onSubmit={this.handleSubmit} action="#" className="form">
           <input onChange={this.handleChanges} type="text" value={newTask} />
           <button type="submit">
-            <FaPlus  size={20} />
+            <FaPlus size={20} />
           </button>
         </form>
 
@@ -39,10 +51,10 @@ export default class Main extends Component {
           {tasks.map(task => (
             <li key={task}>
               {task}
-              <div>
-                <FaPencilAlt className="edit"/>
-                <FaWindowClose className="delete"/>
-              </div>
+              <span>
+                <FaPencilAlt className="edit" />
+                <FaWindowClose className="delete" />
+              </span>
             </li>
           ))}
         </ul>
