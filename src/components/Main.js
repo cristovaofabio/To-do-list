@@ -7,24 +7,40 @@ import { FaPencilAlt, FaWindowClose } from 'react-icons/fa';
 export default class Main extends Component {
   state = {
     newTask: '',
-    tasks: []
+    tasks: [],
+    editing: -1
   };
 
   handleSubmit = (event) => {
     event.preventDefault();
 
-    const { tasks } = this.state;
+    const { tasks, editing } = this.state;
     let { newTask } = this.state;
     newTask = newTask.trim();
+
+    if(newTask.length<3){
+      return;
+    }
 
     if (tasks.indexOf(newTask) !== -1) {
       return;
     }
 
     const newTasks = [...tasks];
-    this.setState({
-      tasks: [...newTasks, newTask],
-    });
+
+    if (editing === -1) {
+      this.setState({
+        tasks: [...newTasks, newTask],
+        newTask: '',
+      });
+    } else {
+      newTasks[editing] = newTask;
+
+      this.setState({
+        tasks: [...newTasks],
+        editing: -1,
+      });
+    }
   }
 
   handleChanges = (event) => {
@@ -45,7 +61,12 @@ export default class Main extends Component {
   }
 
   handleEdit = (event, index) => {
+    const { tasks } = this.state;
 
+    this.setState({
+      editing: index,
+      newTask: tasks[index],
+    });
   }
 
   render() {
