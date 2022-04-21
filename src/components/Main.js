@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import './Main.css';
-import { FaPlus } from 'react-icons/fa';
-
-import { FaPencilAlt, FaWindowClose } from 'react-icons/fa';
+import Form from "./Form";
+import Tasks from "./Tasks";
 
 export default class Main extends Component {
   state = {
@@ -11,6 +10,22 @@ export default class Main extends Component {
     editing: -1
   };
 
+  componentDidMount() {
+    const tasks = JSON.parse(localStorage.getItem('tasks'));
+
+    if (!tasks) return;
+
+    this.setState({ tasks });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { tasks } = this.state;
+
+    if (tasks === prevState.tasks) return;
+
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
   handleSubmit = (event) => {
     event.preventDefault();
 
@@ -18,7 +33,7 @@ export default class Main extends Component {
     let { newTask } = this.state;
     newTask = newTask.trim();
 
-    if(newTask.length<3){
+    if (newTask.length < 3) {
       return;
     }
 
@@ -76,24 +91,18 @@ export default class Main extends Component {
       <div className="main">
         <h1>Task list</h1>
 
-        <form onSubmit={this.handleSubmit} action="#" className="form">
-          <input onChange={this.handleChanges} type="text" value={newTask} />
-          <button type="submit">
-            <FaPlus size={20} />
-          </button>
-        </form>
+        <Form
+          handleSubmit={this.handleSubmit}
+          handleChanges={this.handleChanges}
+          newTask={newTask}
+        />
 
-        <ul className="tasks">
-          {tasks.map((task, index) => (
-            <li key={task}>
-              {task}
-              <span>
-                <FaPencilAlt onClick={(e) => this.handleEdit(e, index)} className="edit" />
-                <FaWindowClose onClick={(e) => this.handleDelete(e, index)} className="delete" />
-              </span>
-            </li>
-          ))}
-        </ul>
+        <Tasks
+          tasks={tasks}
+          handleEdit={this.handleEdit}
+          handleDelete={this.handleDelete}
+        />
+
       </div>
     );
   }
